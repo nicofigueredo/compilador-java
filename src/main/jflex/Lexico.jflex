@@ -108,4 +108,4 @@ COMENTARIO = "***/"{CADENA}*"/***"
 [\ \t\r\n\f]              {/* Ignora espacios en blanco */}
 
 
-[^]    { throw new Error("Error: Caracter invalido " + yytext()); }
+[^]    { throw new Error("Error: Caracter invalido " + yytext() + " " + yyline + ":" + yycolumn ); }
