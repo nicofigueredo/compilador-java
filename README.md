@@ -1,2 +1,2 @@
 # compilador-java
-Compilador hecho en java usando JFlex y Cup
+Base de un compilador hecho en java usando JFlex y Cup
