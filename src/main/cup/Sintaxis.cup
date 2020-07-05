@@ -12,7 +12,7 @@ parser code     //Codigo que se le agrega al parser
         report_error(errMsg, null);
     }
 
-    public void unrecovered_syntax_error(Symbol cur_token) {
+    public void unrecovered_syntax_error(Symbol cur_token) throws Exception {
         String errMsg = "Couldn't repair and continue parse " + cur_token.value.toString() + " " + cur_token.right + ":" + cur_token.left;
         report_fatal_error(errMsg, null);
     }
@@ -20,10 +20,10 @@ parser code     //Codigo que se le agrega al parser
 
                 //Declaracion de terminales
 
-terminal String ID;
-terminal String CONST_INT;
-terminal String CONST_FLOAT;
-terminal String CONST_STR;
+terminal ID;
+terminal CONST_INT;
+terminal CONST_FLOAT;
+terminal CONST_STR;
 
 terminal DEFVAR, ENDDEF;
 terminal TIPO_INTEGER, TIPO_FLOAT;
@@ -35,9 +35,9 @@ terminal OP_AND, OP_OR, OP_NOT;
 terminal OP_ASIG;
 terminal OP_SUMA, OP_RESTA;
 terminal OP_MUL, OP_DIV;
-terminal String OP_IGUAL, OP_DISTINTO;
-terminal String OP_MENOR, OP_MENOR_IGUAL, OP_MAYOR, OP_MAYOR_IGUAL;
-terminal String OP_ASIG_SUM, OP_ASIG_RES, OP_ASIG_MUL, OP_ASIG_DIV;
+terminal OP_IGUAL, OP_DISTINTO;
+terminal OP_MENOR, OP_MENOR_IGUAL, OP_MAYOR, OP_MAYOR_IGUAL;
+terminal OP_ASIG_SUM, OP_ASIG_RES, OP_ASIG_MUL, OP_ASIG_DIV;
 terminal LL_A, LL_C, P_A, P_C;
 terminal PUNTO_COMA;
 terminal DOS_PUNTOS;
@@ -47,14 +47,17 @@ terminal DISPLAY;
 
                 //Declaracion de no terminales
 
-non terminal Symbol inicio, programa, vacio,
+non terminal Symbol inicio, programa,
              seccion_declaraciones, bloque_declaraciones, declaracion,
-             tipo_dato, lista_ids, bloque, sentencia, sentencia_if,
-             sentencia_if_unario ,expresion_asignacion, sentencia_if_parte_else, sentencia_while,
-             expresion_logica, termino_logico, asignacion , asignacion_especial,
-             factor, escritura, lectura, expresion, termino ;
+             tipo_dato, lista_ids, bloque, sentencia,
+             sentencia_if, sentencia_if_parte_else, vacio,
+             sentencia_while,
+             expresion_logica, termino_logico,
+             asignacion , asignacion_especial,
+             expresion, termino, factor,
+             escritura, lectura;
 
-non terminal String operadores_especiales, op_booleano;
+non terminal operadores_especiales, op_booleano;
 
 start with inicio;
 
@@ -103,7 +106,7 @@ sentencia_if_parte_else ::= ELSE LL_A bloque LL_C {::}
                         | vacio {::}
                         ;
 
-vacio   ::= {::}
+vacio   ::= {: RESULT = new Symbol(-1); :}
         ;
 
 sentencia_while     ::= WHILE P_A expresion_logica P_C LL_A bloque LL_C {::}
@@ -150,12 +153,12 @@ termino	::= termino OP_MUL factor {::}
 		| factor {::}
 		;
 
-factor	::= P_A expresion  P_C {::}
-		;
-
 factor	::= ID {::}
 		| CONST_INT {::}
 		| CONST_FLOAT {::}
+		;
+
+factor	::= P_A expresion  P_C {::}
 		;
 
 escritura	::= DISPLAY ID {::}

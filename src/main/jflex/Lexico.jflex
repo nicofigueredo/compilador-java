@@ -1,7 +1,8 @@
+package Analizadores;
 import java_cup.runtime.*;
 
 %%      /* Directivas */
-
+%public
 %class AnalizadorLexico
 %cupsym Simbolos
 %cup
@@ -15,10 +16,11 @@ import java_cup.runtime.*;
 %{
     StringBuffer string = new StringBuffer();
     private Symbol symbol(int type) {
-      return new Symbol(type, yyline, yycolumn);
+        System.out.println("[LEX] TOKEN: " + yytext());
+        return new Symbol(type, yyline, yycolumn);
     }
     private Symbol symbol(int type, Object value) {
-      return new Symbol(type, yyline, yycolumn, value);
+        return new Symbol(type, yyline, yycolumn, value);
     }
 %}
 
