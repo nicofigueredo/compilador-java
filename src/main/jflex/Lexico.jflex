@@ -14,9 +14,8 @@ import java_cup.runtime.*;
         /* Codigo del usuario en java */
 
 %{
-    StringBuffer string = new StringBuffer();
     private Symbol symbol(int type) {
-        System.out.println("[LEX] TOKEN: " + yytext());
+        System.out.println("[LEX] TOKEN < " + Simbolos.terminalNames[type] + " > : " + yytext());
         return new Symbol(type, yyline, yycolumn);
     }
     private Symbol symbol(int type, Object value) {
