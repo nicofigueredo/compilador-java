@@ -15,10 +15,12 @@ Base de un compilador hecho en java usando JFlex y Cup.
 
 - Borrar la carpeta `.git`
 
-- (opcional) Meter todos los archivos en un repositorio propio o empezar uno nuevo con
+- (opcional) Crear un nuevo repositorio desde github y localmente ejecutar
 
 ```
 git init
 git add --all
-git commit -m "Comienzo del compilador"
+git commit -m "Inicio del compilador"
+git remote add origin https://github.com/tu-repo.git
+git push -u origin master
 ```
