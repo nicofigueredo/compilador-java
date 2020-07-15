@@ -8,6 +8,6 @@
 .idea/
 
 # Clases generadas automaticamente
-*/Analizadores/AnalizadorLexico.java
-*/Analizadores/AnalizadorSintactico.java
-*/Analizadores/Simbolos.java
+# /Analizadores/AnalizadorLexico.java
+# /Analizadores/AnalizadorSintactico.java
+# /Analizadores/Simbolos.java

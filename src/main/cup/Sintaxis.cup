@@ -2,168 +2,83 @@ import java_cup.runtime.*;
 
 action code     //Codigo para las acciones gramaticales
 {:
-
+    public void mostrarRegla(Regla regla) {
+        System.out.println(regla);
+    }
 :}
 
 parser code     //Codigo que se le agrega al parser
 {:
     public void syntax_error(Symbol cur_token) {
-        String errMsg = "Syntax error " + cur_token.value.toString() + " " + cur_token.right + ":" + cur_token.left;
+        String errMsg = "Syntax error " + cur_token.value.toString() + " " + cur_token.right + ":" + cur_token.left + "\n";
         report_error(errMsg, null);
     }
 
     public void unrecovered_syntax_error(Symbol cur_token) throws Exception {
-        String errMsg = "Couldn't repair and continue parse " + cur_token.value.toString() + " " + cur_token.right + ":" + cur_token.left;
+        String errMsg = "Couldn't repair and continue parse " + cur_token.value.toString() + " " + cur_token.right + ":" + cur_token.left + "\n";
         report_fatal_error(errMsg, null);
     }
 :}
 
                 //Declaracion de terminales
 
-terminal ID;
-terminal CONST_INT;
-terminal CONST_FLOAT;
-terminal CONST_STR;
-
-terminal DEFVAR, ENDDEF;
-terminal TIPO_INTEGER, TIPO_FLOAT;
-
-terminal WHILE;
-terminal IF, ELSE;
-terminal OP_AND, OP_OR, OP_NOT;
-
-terminal OP_ASIG;
-terminal OP_SUMA, OP_RESTA;
-terminal OP_MUL, OP_DIV;
-terminal OP_IGUAL, OP_DISTINTO;
-terminal OP_MENOR, OP_MENOR_IGUAL, OP_MAYOR, OP_MAYOR_IGUAL;
-terminal OP_ASIG_SUM, OP_ASIG_RES, OP_ASIG_MUL, OP_ASIG_DIV;
-terminal LL_A, LL_C, P_A, P_C;
-terminal PUNTO_COMA;
-terminal DOS_PUNTOS;
-terminal COMA;
-terminal GET;
-terminal DISPLAY;
+terminal op_asig, op_suma, op_resta, op_mul, op_div;
+terminal String id, const_int, const_float, const_str;
 
                 //Declaracion de no terminales
 
-non terminal Symbol inicio, programa,
-             seccion_declaraciones, bloque_declaraciones, declaracion,
-             tipo_dato, lista_ids, bloque, sentencia,
-             sentencia_if, sentencia_if_parte_else, vacio,
-             sentencia_while,
-             expresion_logica, termino_logico,
-             asignacion , asignacion_especial,
-             expresion, termino, factor,
-             escritura, lectura;
+non terminal Symbol S, PROG, SENT,
+                    ASIG,
+                    EXPRESION, TERMINO, FACTOR;
 
-non terminal operadores_especiales, op_booleano;
-
-start with inicio;
+start with S;
 
                 //Reglas gramaticales
 
-inicio      ::= programa {: System.out.println("Compilacion OK"); :}
-            ;
-
-programa	::= seccion_declaraciones  bloque {::}
-            ;
-
-seccion_declaraciones 	::= DEFVAR bloque_declaraciones ENDDEF {::}
-                        ;
-
-bloque_declaraciones	::= declaracion
-                        | bloque_declaraciones declaracion  {::}
-						;
-
-declaracion ::= tipo_dato DOS_PUNTOS lista_ids  {::}
-            ;
-
-tipo_dato 	::= TIPO_INTEGER {::}
-			| TIPO_FLOAT {::}
-			;
-
-lista_ids	::= ID {::}
-			| lista_ids PUNTO_COMA ID {::}
-			;
-
-bloque  ::= sentencia
-        | bloque sentencia {::}
+S       ::= PROG {: mostrarRegla(Regla.REGLA_S);
+            :}
         ;
 
-sentencia   ::= asignacion {::}
-            | asignacion_especial {::}
-			| sentencia_if {::}
-			| sentencia_while {::}
-			| escritura {::}
-			| lectura {::}
-			;
-
-sentencia_if    ::= IF P_A expresion_logica  P_C LL_A bloque  LL_C sentencia_if_parte_else {::}
-                ;
-
-sentencia_if_parte_else ::= ELSE LL_A bloque LL_C {::}
-                        | vacio {::}
-                        ;
-
-vacio   ::= {: RESULT = new Symbol(-1); :}
+PROG    ::= SENT {: mostrarRegla(Regla.REGLA_PROG);
+            :}
+        | PROG SENT {: mostrarRegla(Regla.REGLA_PROG2);
+            :}
         ;
 
-sentencia_while     ::= WHILE P_A expresion_logica P_C LL_A bloque LL_C {::}
-                    ;
+SENT    ::= ASIG {: mostrarRegla(Regla.REGLA_SENT);
+            :}
+        ;
 
-op_booleano 	::=  OP_MENOR {::}
-				| OP_MENOR_IGUAL {::}
-				| OP_MAYOR {::}
-				| OP_MAYOR_IGUAL {::}
-				| OP_IGUAL {::}
-				| OP_DISTINTO {::}
-				;
+ASIG    ::= id:id {:
+                System.out.println("\tid: " + id);
+                RESULT = new Symbol(-1);    // <- PARA PODER PONER CODIGO ANTES DEL FINAL DE LA REGLA
+            :} op_asig EXPRESION {: mostrarRegla(Regla.REGLA_ASIG);
+            :}
+        ;
 
-expresion_logica	::= termino_logico  OP_AND termino_logico {::}
-					| termino_logico OP_OR termino_logico {::}
-					| termino_logico {::}
-					|  OP_NOT termino_logico {::}
-					;
-
-termino_logico	::= expresion op_booleano expresion {::}
-                ;
-
-asignacion 	::= ID OP_ASIG expresion  {::}
-              | ID OP_ASIG IF P_A expresion_logica COMA expresion COMA expresion P_C {::}
-              ;
-
-asignacion_especial ::= ID operadores_especiales expresion  {::}
-                    ;
-
-operadores_especiales   ::= OP_ASIG_SUM {::}
-                        | OP_ASIG_RES {::}
-                        | OP_ASIG_MUL {::}
-                        | OP_ASIG_DIV {::}
-						;
-
-expresion	::= termino {::}
-			| expresion OP_SUMA termino {::}
-			| expresion OP_RESTA termino {::}
+EXPRESION	::= TERMINO {: mostrarRegla(Regla.REGLA_EXPRESION);
+                :}
+			| EXPRESION op_suma TERMINO {: mostrarRegla(Regla.REGLA_EXPRESION2);
+			    :}
+			| EXPRESION op_resta TERMINO {: mostrarRegla(Regla.REGLA_EXPRESION3);
+			    :}
 			;
 
-
-termino	::= termino OP_MUL factor {::}
-		| termino OP_DIV factor  {::}
-		| factor {::}
+TERMINO	::= FACTOR {: mostrarRegla(Regla.REGLA_TERMINO);
+            :}
+		| TERMINO op_div FACTOR {: mostrarRegla(Regla.REGLA_TERMINO2);
+		    :}
+		| TERMINO op_mul FACTOR {: mostrarRegla(Regla.REGLA_TERMINO3);
+		    :}
 		;
 
-factor	::= ID {::}
-		| CONST_INT {::}
-		| CONST_FLOAT {::}
-		;
-
-factor	::= P_A expresion  P_C {::}
-		;
-
-escritura	::= DISPLAY ID {::}
-			| DISPLAY CONST_STR {::}
-			;
-
-lectura	::= GET ID {::}
+FACTOR	::= id:id {: mostrarRegla(Regla.REGLA_FACTOR);
+                System.out.println("\tid: " + id);
+            :}
+		| const_int:const_int {: mostrarRegla(Regla.REGLA_FACTOR2);
+		        System.out.println("\tconst_int: " + const_int);
+		    :}
+		| const_float:const_float {: mostrarRegla(Regla.REGLA_FACTOR3);
+		        System.out.println("\tconst_float: " + const_float);
+		    :}
 		;
